@@ -3,4 +3,4 @@ Mateusz Zwierzyński i Dawid Rumiński
 
 # Model bazy danych
 
-[](db_schema.png)
+![baza](db_schema.png)
