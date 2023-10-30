@@ -18,6 +18,6 @@ class Review(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     desc = models.CharField(max_length=45)
-    rating = models.FloatField()
+    rating = models.FloatField(max=5.0, min=0.0)
     
 
