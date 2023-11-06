@@ -27,7 +27,7 @@ def index(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index),
-    path("api/books/", BookList.as_view()),
-    path("api/reviews/", ReviewList.as_view()),
-    path("api/users/", UserList.as_view()),
+    path("api/books", BookList.as_view()),
+    path("api/reviews", ReviewList.as_view()),
+    path("api/users", UserList.as_view()),
 ]

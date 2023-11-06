@@ -1,4 +1,3 @@
-# example model for user
 from django.db import models
 
 

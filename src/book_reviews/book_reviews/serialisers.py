@@ -1,11 +1,22 @@
 from rest_framework import serializers
 from datetime import datetime
+from .models import Book, Review, User
 
 
 class BookSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
     name = serializers.CharField(max_length=200)
     author = serializers.CharField(max_length=200)
     pub = serializers.DateField()
+
+    class Meta:
+        model = Book
+        fields = ["id", "name", "author", "pub"]
+
+    def validate_id(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("ID is invalid")
+        return value
 
     def valitate_name(self, value):
         if len(value) < 2 and len(value) > 200 and isinstance(value, str):
@@ -34,6 +45,16 @@ class ReviewSerializer(serializers.ModelSerializer):
     book_id = serializers.IntegerField()
     rating = serializers.FloatField()
     desc = serializers.CharField(max_length=200)
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = Review
+        fields = ["id", "user_id", "book_id", "rating", "desc"]
+
+    def valitate_id(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("ID is invalid")
+        return value
 
     def valitate_user_id(self, value):
         if value < 0 and isinstance(value, int):
@@ -63,9 +84,19 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
     name = serializers.CharField(max_length=200)
     password = serializers.CharField(max_length=200)
     admin = serializers.BooleanField()
+
+    class Meta:
+        model = User
+        fields = ["id", "name", "password", "admin"]
+
+    def valitate_id(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("ID is invalid")
+        return value
 
     def valitate_name(self, value):
         if len(value) < 2 and len(value) > 200 and isinstance(value, str):
