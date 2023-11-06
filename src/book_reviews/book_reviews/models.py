@@ -23,5 +23,5 @@ class Review(models.Model):
     id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
-    rating = models.FloatField(max_value=5.0, min_value=0.0)
+    rating = models.FloatField()
     desc = models.CharField(max_length=45)

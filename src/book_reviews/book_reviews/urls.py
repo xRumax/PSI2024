@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
+from .views import BookList, ReviewList, UserList
 
 
 def index(request):
@@ -26,4 +27,7 @@ def index(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index),
+    path("api/books/", BookList.as_view()),
+    path("api/reviews/", ReviewList.as_view()),
+    path("api/users/", UserList.as_view()),
 ]
