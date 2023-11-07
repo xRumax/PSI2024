@@ -14,21 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
+from django.contrib import admin
+from django.urls import path, include
 from django.http import HttpResponse
-from .views import (
-    BookList,
-    ReviewList,
-    UserList,
-    BookDetail,
-    ReviewDetail,
-    UserDetail,
-)
 from django.http import HttpResponseNotFound
 
 
 def index(request):
-    return HttpResponse("Nothing to see here", status=200)
+    return HttpResponse("Hello, world")
 
 
 def error_404_view(request, exception):
@@ -36,12 +29,8 @@ def error_404_view(request, exception):
 
 
 urlpatterns = [
+    path("admin/", admin.site.urls),
     path("", index),
-    path("books", BookList.as_view()),
-    path("books/<int:pk>", BookDetail.as_view()),
-    path("reviews", ReviewList.as_view()),
-    path("reviews/<int:pk>", ReviewDetail.as_view()),
-    path("users", UserList.as_view()),
-    path("users/<int:pk>", UserDetail.as_view()),
+    path("api/", include("book_reviews.urls")),
     path("<path:path>", error_404_view),
 ]
