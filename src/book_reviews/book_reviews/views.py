@@ -77,7 +77,7 @@ class AuthorList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 # get book by id
 class BookDetail(APIView):
     """
@@ -132,7 +132,8 @@ class AuthorDetail(APIView):
         return Response(
             {"message": "Author deleted successfully"}, status=status.HTTP_200_OK
         )
-
+    
+    
 class ReviewDetail(APIView):
     """
     Retrieve, update or delete a review instance.

@@ -5,13 +5,13 @@ from .models import Book, Review, User, Author
 
 class BookSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
+    author_id = serializers.IntegerField()
     name = serializers.CharField(max_length=200)
-    author = serializers.CharField(max_length=200)
-    pub = serializers.DateField()
+    pub = serializers.IntegerField()
 
     class Meta:
         model = Book
-        fields = ["id", "name", "author", "pub"]
+        fields = ["id", "author_id", "name" , "pub"]
 
     def validate_id(self, value):
         if value < 0 and isinstance(value, int):
@@ -41,11 +41,12 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
     user_id = serializers.IntegerField()
     book_id = serializers.IntegerField()
     rating = serializers.FloatField()
     desc = serializers.CharField(max_length=200)
-    id = serializers.IntegerField()
+    
 
     class Meta:
         model = Review

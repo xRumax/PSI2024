@@ -1,4 +1,5 @@
 from django.db import models
+import datetime 
 
 
 
@@ -20,8 +21,7 @@ class Book(models.Model):
     id = models.AutoField(primary_key=True)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     name = models.CharField(max_length=45)
-    pub = models.DateField()
-
+    pub = models.IntegerField()
 
 class Review(models.Model):
     __name__ = "review"
