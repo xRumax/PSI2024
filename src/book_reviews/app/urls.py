@@ -17,20 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
-from django.http import HttpResponseNotFound
 
 
 def index(request):
     return HttpResponse("Hello, world")
 
 
-def error_404_view(request, exception):
-    return HttpResponseNotFound("Error 404, page not found")
-
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index),
     path("api/", include("book_reviews.urls")),
-    path("<path:path>", error_404_view),
 ]

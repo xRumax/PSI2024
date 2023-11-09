@@ -24,15 +24,10 @@ from .views import (
     ReviewDetail,
     UserDetail,
 )
-from django.http import HttpResponseNotFound
 
 
 def index(request):
     return HttpResponse("Nothing to see here", status=200)
-
-
-def error_404_view(request, exception):
-    return HttpResponseNotFound("Error 404, page not found")
 
 
 urlpatterns = [
@@ -43,5 +38,4 @@ urlpatterns = [
     path("reviews/<int:pk>", ReviewDetail.as_view()),
     path("users", UserList.as_view()),
     path("users/<int:pk>", UserDetail.as_view()),
-    path("<path:path>", error_404_view),
 ]
