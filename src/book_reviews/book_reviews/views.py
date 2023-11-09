@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
-from .models import Book, Review, User
-from .serialisers import BookSerializer, ReviewSerializer, UserSerializer
+from .models import Book, Review, User, Author
+from .serialisers import BookSerializer, ReviewSerializer, UserSerializer, AuthorSerializer
 from django.http import Http404
 
 
@@ -61,6 +61,23 @@ class UserList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AuthorList(APIView):
+    """
+    List all authors, or create a new author.
+    """
+
+    def get(self, request, format=None):
+        authors = Author.objects.all()
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = AuthorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 # get book by id
 class BookDetail(APIView):
     """
@@ -89,6 +106,32 @@ class BookDetail(APIView):
             {"message": "Book deleted successfully"}, status=status.HTTP_200_OK
         )
 
+class AuthorDetail(APIView):
+    """
+    Retrieve, update or delete a author instance.
+    """
+
+    def get_object(self, pk):
+        try:
+            return Author.objects.get(pk=pk)
+        except Author.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        author = self.get_object(pk)
+        serializer = AuthorSerializer(author, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Author updated successfully"}, status=status.HTTP_200_OK
+            )
+
+    def delete(self, request, pk, format=None):
+        author = self.get_object(pk)
+        author.delete()
+        return Response(
+            {"message": "Author deleted successfully"}, status=status.HTTP_200_OK
+        )
 
 class ReviewDetail(APIView):
     """
@@ -144,3 +187,5 @@ class UserDetail(APIView):
         return Response(
             {"message": "User deleted successfully"}, status=status.HTTP_200_OK
         )
+
+

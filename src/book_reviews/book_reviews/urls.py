@@ -23,6 +23,8 @@ from .views import (
     BookDetail,
     ReviewDetail,
     UserDetail,
+    AuthorList,
+    AuthorDetail,
 )
 from django.http import HttpResponseNotFound
 
@@ -43,5 +45,7 @@ urlpatterns = [
     path("reviews/<int:pk>", ReviewDetail.as_view()),
     path("users", UserList.as_view()),
     path("users/<int:pk>", UserDetail.as_view()),
+    path("authors", AuthorList.as_view()),
+    path("authors/<int:pk>", AuthorDetail.as_view()),
     path("<path:path>", error_404_view),
 ]

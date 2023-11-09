@@ -1,6 +1,7 @@
 from django.db import models
 
 
+
 class User(models.Model):
     __name__ = "user"
     id = models.AutoField(primary_key=True)
@@ -8,12 +9,17 @@ class User(models.Model):
     password = models.CharField(max_length=45)
     admin = models.BooleanField(default=False)
 
+class Author(models.Model):
+    __name__ = "author"
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=45)
+    date_of_birth = models.DateField()
 
 class Book(models.Model):
     __name__ = "book"
     id = models.AutoField(primary_key=True)
+    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     name = models.CharField(max_length=45)
-    author = models.CharField(max_length=45)
     pub = models.DateField()
 
 
@@ -24,3 +30,6 @@ class Review(models.Model):
     book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
     rating = models.FloatField()
     desc = models.CharField(max_length=45)
+
+
+

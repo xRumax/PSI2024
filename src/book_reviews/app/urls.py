@@ -32,5 +32,4 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index),
     path("api/", include("book_reviews.urls")),
-    path("<path:path>", error_404_view),
 ]

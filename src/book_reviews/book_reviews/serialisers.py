@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from datetime import datetime
-from .models import Book, Review, User
+from .models import Book, Review, User, Author
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -111,6 +111,38 @@ class UserSerializer(serializers.ModelSerializer):
     def valitate_admin(self, value):
         if isinstance(value, bool):
             raise serializers.ValidationError("Admin is invalid")
+        return value
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=45)
+    date_of_birth = serializers.DateField()
+
+    class Meta:
+        model = Author
+        fields = ["id", "name", "date_of_birth"]
+
+    def valitate_id(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("ID is invalid")
+        return value
+
+    def valitate_name(self, value):
+        if len(value) < 2 and len(value) > 200 and isinstance(value, str):
+            raise serializers.ValidationError("Name is too short")
+        return value
+
+    def date_of_birth(self, value):
+        if value > datetime.date.today() and isinstance(value, datetime.date):
+            raise serializers.ValidationError("Date is in the future")
         return value
 
     def create(self, validated_data):
