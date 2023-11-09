@@ -32,6 +32,7 @@ def index(request):
     return HttpResponse("Nothing to see here", status=200)
 
 
+
 urlpatterns = [
     path("", index),
     path("books", BookList.as_view()),
