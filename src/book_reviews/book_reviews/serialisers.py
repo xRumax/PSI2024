@@ -3,15 +3,46 @@ from datetime import datetime
 from .models import Book, Review, User, Author
 
 
+class AuthorSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=45)
+    date_of_birth = serializers.DateField()
+
+    class Meta:
+        model = Author
+        fields = ["id", "name", "date_of_birth"]
+
+    def valitate_id(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("ID is invalid")
+        return value
+
+    def valitate_name(self, value):
+        if len(value) < 2 and len(value) > 200 and isinstance(value, str):
+            raise serializers.ValidationError("Name is too short")
+        return value
+
+    def date_of_birth(self, value):
+        if value > datetime.date.today() and isinstance(value, datetime.date):
+            raise serializers.ValidationError("Date is in the future")
+        return value
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+
+
 class BookSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    author_id = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all())
-    name = serializers.CharField(max_length=200)
+    author = AuthorSerializer(source="author_id", read_only=True)
+    name = serializers.CharField(max_length=45)
     pub = serializers.IntegerField()
 
     class Meta:
         model = Book
-        fields = ["id", "author_id", "name", "pub"]
+        fields = ["id", "author", "name", "pub"]
 
     def validate_id(self, value):
         if value < 0 and isinstance(value, int):
@@ -19,13 +50,14 @@ class BookSerializer(serializers.ModelSerializer):
         return value
 
     def validate_name(self, value):
-        if len(value) < 2 or len(value) > 200 or not isinstance(value, str):
+        if len(value) < 2 or len(value) > 45 or not isinstance(value, str):
             raise serializers.ValidationError("Name is too short or too long")
         return value
 
     def validate_pub(self, value):
-        if value > datetime.now().year or not isinstance(value, int):
-            raise serializers.ValidationError("Date is in the future")
+        current_year = datetime.now().year
+        if value > current_year:
+            raise serializers.ValidationError("Year is in the future")
         return value
 
     def create(self, validated_data):
@@ -106,37 +138,6 @@ class UserSerializer(serializers.ModelSerializer):
     def valitate_admin(self, value):
         if isinstance(value, bool):
             raise serializers.ValidationError("Admin is invalid")
-        return value
-
-    def create(self, validated_data):
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
-
-
-class AuthorSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField(max_length=45)
-    date_of_birth = serializers.DateField()
-
-    class Meta:
-        model = Author
-        fields = ["id", "name", "date_of_birth"]
-
-    def valitate_id(self, value):
-        if value < 0 and isinstance(value, int):
-            raise serializers.ValidationError("ID is invalid")
-        return value
-
-    def valitate_name(self, value):
-        if len(value) < 2 and len(value) > 200 and isinstance(value, str):
-            raise serializers.ValidationError("Name is too short")
-        return value
-
-    def date_of_birth(self, value):
-        if value > datetime.date.today() and isinstance(value, datetime.date):
-            raise serializers.ValidationError("Date is in the future")
         return value
 
     def create(self, validated_data):
