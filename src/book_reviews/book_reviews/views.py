@@ -25,7 +25,7 @@ class BookList(APIView):
     def post(self, request, format=None):
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
-            author_id = serializer.validated_data.get("author_id")
+            author_id = serializer.validated_data.get("author_id").id
             try:
                 author = Author.objects.get(id=author_id)
             except Author.DoesNotExist:
@@ -35,7 +35,7 @@ class BookList(APIView):
                 )
             new_book = serializer.save(author_id=author)
 
-            return Response(serializer.data(), status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
