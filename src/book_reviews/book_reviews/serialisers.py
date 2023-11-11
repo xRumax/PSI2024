@@ -36,13 +36,17 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class BookSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    author = AuthorSerializer(source="author_id", read_only=True)
+    author = AuthorSerializer(read_only=True)
+    author_id = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all(), source="author",write_only=True)
     name = serializers.CharField(max_length=45)
     pub = serializers.IntegerField()
 
+
     class Meta:
         model = Book
-        fields = ["id", "author", "name", "pub"]
+        fields = ["id", "author", "name", "pub", "author_id"]
+
+    
 
     def validate_id(self, value):
         if value < 0 and isinstance(value, int):
@@ -69,8 +73,8 @@ class BookSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    user_id = serializers.IntegerField()
-    book_id = serializers.IntegerField()
+    user = serializers.IntegerField()
+    book = serializers.IntegerField()
     rating = serializers.FloatField()
     desc = serializers.CharField(max_length=200)
 

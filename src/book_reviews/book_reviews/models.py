@@ -19,7 +19,7 @@ class Author(models.Model):
 class Book(models.Model):
     __name__ = "book"
     id = models.AutoField(primary_key=True)
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     name = models.CharField(max_length=45)
     pub = models.IntegerField()
 
@@ -27,7 +27,7 @@ class Book(models.Model):
 class Review(models.Model):
     __name__ = "review"
     id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    book_id = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     rating = models.FloatField()
     desc = models.CharField(max_length=45)

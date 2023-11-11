@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework import permissions
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
@@ -13,6 +14,11 @@ from django.http import Http404
 
 
 class BookList(APIView):
+    queryset=Book.objects.all()
+    serializer_class=BookSerializer
+    name='book-list'
+    fliter_fields=['author', 'name', 'pub']
+
     """
     List all books, or create a new book.
     """
@@ -25,77 +31,15 @@ class BookList(APIView):
     def post(self, request, format=None):
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
-            author_id = serializer.validated_data.get("author_id").id
-            try:
-                author = Author.objects.get(id=author_id)
-            except Author.DoesNotExist:
-                return Response(
-                    {"message": "Author does not exist"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-            new_book = serializer.save(author_id=author)
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ReviewList(APIView):
-    """
-    List all reviews, or create a new review.
-    """
-
-    def get(self, request, format=None):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = BookSerializer(data=request.data, context={"request": request})
-        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserList(APIView):
-    """
-    List all users, or create a new user.
-    """
-
-    def get(self, request, format=None):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class AuthorList(APIView):
-    """
-    List all authors, or create a new author.
-    """
-
-    def get(self, request, format=None):
-        authors = Author.objects.all()
-        serializer = AuthorSerializer(authors, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = AuthorSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # get book by id
 class BookDetail(APIView):
+    queryset=Book.objects.all()
+    serializer_class = BookSerializer
+    name='book-detail'
     """
     Retrieve, update or delete a book instance.
     """
@@ -123,32 +67,23 @@ class BookDetail(APIView):
         )
 
 
-class AuthorDetail(APIView):
+
+class ReviewList(APIView):
     """
-    Retrieve, update or delete a author instance.
+    List all reviews, or create a new review.
     """
 
-    def get_object(self, pk):
-        try:
-            return Author.objects.get(pk=pk)
-        except Author.DoesNotExist:
-            raise Http404
+    def get(self, request, format=None):
+        reviews = Review.objects.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
-        author = self.get_object(pk)
-        serializer = AuthorSerializer(author, data=request.data)
+    def post(self, request, format=None):
+        serializer = ReviewSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
             serializer.save()
-            return Response(
-                {"message": "Author updated successfully"}, status=status.HTTP_200_OK
-            )
-
-    def delete(self, request, pk, format=None):
-        author = self.get_object(pk)
-        author.delete()
-        return Response(
-            {"message": "Author deleted successfully"}, status=status.HTTP_200_OK
-        )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ReviewDetail(APIView):
@@ -179,6 +114,24 @@ class ReviewDetail(APIView):
         )
 
 
+
+class UserList(APIView):
+    """
+    List all users, or create a new user.
+    """
+
+    def get(self, request, format=None):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class UserDetail(APIView):
     """
     Retrieve, update or delete a user instance.
@@ -205,3 +158,53 @@ class UserDetail(APIView):
         return Response(
             {"message": "User deleted successfully"}, status=status.HTTP_200_OK
         )
+
+
+
+class AuthorList(APIView):
+    """
+    List all authors, or create a new author.
+    """
+
+    def get(self, request, format=None):
+        authors = Author.objects.all()
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = AuthorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AuthorDetail(APIView):
+    """
+    Retrieve, update or delete a author instance.
+    """
+
+    def get_object(self, pk):
+        try:
+            return Author.objects.get(pk=pk)
+        except Author.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        author = self.get_object(pk)
+        serializer = AuthorSerializer(author, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Author updated successfully"}, status=status.HTTP_200_OK
+            )
+
+    def delete(self, request, pk, format=None):
+        author = self.get_object(pk)
+        author.delete()
+        return Response(
+            {"message": "Author deleted successfully"}, status=status.HTTP_200_OK
+        )
+
+
+
