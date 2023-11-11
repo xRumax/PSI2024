@@ -5,36 +5,31 @@ from .models import Book, Review, User, Author
 
 class BookSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    author_id = serializers.IntegerField()
+    author_id = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all())
     name = serializers.CharField(max_length=200)
     pub = serializers.IntegerField()
 
     class Meta:
         model = Book
-        fields = ["id", "author_id", "name" , "pub"]
+        fields = ["id", "author_id", "name", "pub"]
 
     def validate_id(self, value):
         if value < 0 and isinstance(value, int):
             raise serializers.ValidationError("ID is invalid")
         return value
 
-    def valitate_name(self, value):
-        if len(value) < 2 and len(value) > 200 and isinstance(value, str):
-            raise serializers.ValidationError("Name is too short")
+    def validate_name(self, value):
+        if len(value) < 2 or len(value) > 200 or not isinstance(value, str):
+            raise serializers.ValidationError("Name is too short or too long")
+        return value
+
+    def validate_pub(self, value):
+        if value > datetime.now().year or not isinstance(value, int):
+            raise serializers.ValidationError("Date is in the future")
         return value
 
     def create(self, validated_data):
         return super().create(validated_data)
-
-    def valitate_author(self, value):
-        if len(value) < 2 and len(value) > 200 and isinstance(value, str):
-            raise serializers.ValidationError("Author is too short")
-        return value
-
-    def valitate_pub(self, value):
-        if value > datetime.date.today() and isinstance(value, datetime.date):
-            raise serializers.ValidationError("Date is in the future")
-        return value
 
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
@@ -46,7 +41,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     book_id = serializers.IntegerField()
     rating = serializers.FloatField()
     desc = serializers.CharField(max_length=200)
-    
 
     class Meta:
         model = Review
@@ -119,7 +113,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
-
 
 
 class AuthorSerializer(serializers.ModelSerializer):

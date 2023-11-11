@@ -3,7 +3,12 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
 from .models import Book, Review, User, Author
-from .serialisers import BookSerializer, ReviewSerializer, UserSerializer, AuthorSerializer
+from .serialisers import (
+    BookSerializer,
+    ReviewSerializer,
+    UserSerializer,
+    AuthorSerializer,
+)
 from django.http import Http404
 
 
@@ -20,8 +25,18 @@ class BookList(APIView):
     def post(self, request, format=None):
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            author_id = serializer.validated_data.get("author_id")
+            try:
+                author = Author.objects.get(id=author_id)
+            except Author.DoesNotExist:
+                return Response(
+                    {"message": "Author does not exist"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            new_book = serializer.save(author_id=author)
+
+            return Response(serializer.data(), status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -77,7 +92,8 @@ class AuthorList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 # get book by id
 class BookDetail(APIView):
     """
@@ -106,6 +122,7 @@ class BookDetail(APIView):
             {"message": "Book deleted successfully"}, status=status.HTTP_200_OK
         )
 
+
 class AuthorDetail(APIView):
     """
     Retrieve, update or delete a author instance.
@@ -132,8 +149,8 @@ class AuthorDetail(APIView):
         return Response(
             {"message": "Author deleted successfully"}, status=status.HTTP_200_OK
         )
-    
-    
+
+
 class ReviewDetail(APIView):
     """
     Retrieve, update or delete a review instance.
@@ -188,5 +205,3 @@ class UserDetail(APIView):
         return Response(
             {"message": "User deleted successfully"}, status=status.HTTP_200_OK
         )
-
-
