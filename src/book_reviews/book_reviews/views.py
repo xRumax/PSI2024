@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework import status
 from .models import Book, Review, User, Author
-from .serialisers import (
+from .serializers import (
     BookSerializer,
     ReviewSerializer,
     UserSerializer,

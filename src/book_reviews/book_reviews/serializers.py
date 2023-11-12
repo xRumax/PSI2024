@@ -4,7 +4,6 @@ from .models import Book, Review, User, Author
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
     name = serializers.CharField(max_length=45)
     date_of_birth = serializers.DateField()
 
@@ -35,9 +34,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    author = AuthorSerializer(read_only=True)
-    author_id = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all(), source="author",write_only=True)
+    author = AuthorSerializer(read_only = True)
+    author_id = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all(),source ="author", write_only=True)
     name = serializers.CharField(max_length=45)
     pub = serializers.IntegerField()
 
@@ -45,8 +43,6 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ["id", "author", "name", "pub", "author_id"]
-
-    
 
     def validate_id(self, value):
         if value < 0 and isinstance(value, int):
@@ -69,53 +65,8 @@ class BookSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
-
-
-class ReviewSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    user = serializers.IntegerField()
-    book = serializers.IntegerField()
-    rating = serializers.FloatField()
-    desc = serializers.CharField(max_length=200)
-
-    class Meta:
-        model = Review
-        fields = ["id", "user_id", "book_id", "rating", "desc"]
-
-    def valitate_id(self, value):
-        if value < 0 and isinstance(value, int):
-            raise serializers.ValidationError("ID is invalid")
-        return value
-
-    def valitate_user_id(self, value):
-        if value < 0 and isinstance(value, int):
-            raise serializers.ValidationError("User ID is invalid")
-        return value
-
-    def valitate_book_id(self, value):
-        if value < 0 and isinstance(value, int):
-            raise serializers.ValidationError("Book ID is invalid")
-        return value
-
-    def valitate_rating(self, value):
-        if value < 0 and value > 5 and isinstance(value, float):
-            raise serializers.ValidationError("Rating is invalid")
-        return value
-
-    def valitate_desc(self, value):
-        if len(value) < 2 and len(value) > 200 and isinstance(value, str):
-            raise serializers.ValidationError("Description is invalid")
-        return value
-
-    def create(self, validated_data):
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
-
-
+    
 class UserSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
     name = serializers.CharField(max_length=200)
     password = serializers.CharField(max_length=200)
     admin = serializers.BooleanField()
@@ -124,10 +75,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "name", "password", "admin"]
 
-    def valitate_id(self, value):
-        if value < 0 and isinstance(value, int):
-            raise serializers.ValidationError("ID is invalid")
-        return value
 
     def valitate_name(self, value):
         if len(value) < 2 and len(value) > 200 and isinstance(value, str):
@@ -149,3 +96,47 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(queryset=User.objects.all(), slug_field='name')
+    book = serializers.SlugRelatedField(queryset=Book.objects.all(), slug_field='name')
+    author = serializers.SlugRelatedField(queryset=Author.objects.all(), slug_field='name')
+    rating = serializers.FloatField()
+    desc = serializers.CharField(max_length=200)
+
+    class Meta:
+        model = Review
+        fields = ["id", "user", "book", "author", "rating", "desc" ]
+
+    def valitate_id(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("ID is invalid")
+        return value
+
+    def valitate_user(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("User ID is invalid")
+        return value
+
+    def valitate_book(self, value):
+        if value < 0 and isinstance(value, int):
+            raise serializers.ValidationError("Book ID is invalid")
+        return value
+
+    def valitate_rating(self, value):
+        if value < 0 and value > 5 and isinstance(value, float):
+            raise serializers.ValidationError("Rating is invalid")
+        return value
+
+    def valitate_desc(self, value):
+        if len(value) < 2 and len(value) > 200 and isinstance(value, str):
+            raise serializers.ValidationError("Description is invalid")
+        return value
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
+
+
