@@ -10,7 +10,9 @@ class User(Base):
     username = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
     is_admin = Column(Integer, nullable=False)
-    reviews = relationship("BookReview", lazy="joined")
+    reviews = relationship(
+        "Review", back_populates="user", cascade="all, delete-orphan", lazy="joined"
+    )
 
 
 class Author(Base):
@@ -18,7 +20,7 @@ class Author(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
     birth_date = Column(DateTime, nullable=False)
-    books = relationship("Book", lazy="joined")
+    books = relationship("Book", back_populates="author", cascade="all, delete-orphan")
 
 
 class Book(Base):
@@ -26,18 +28,20 @@ class Book(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(255), nullable=False)
     pub = Column(DateTime, nullable=False)
-    author_id = Column(
-        Integer, ForeignKey("authors.id"), nullable=False
-    )  # Change this line
-    author = relationship("Author", back_populates="books")  # Add this line
-    reviews = relationship("BookReview", lazy="joined")
+    author_id = Column(Integer, ForeignKey("authors.id"))
+    author = relationship("Author", back_populates="books", lazy="select")
+    reviews = relationship(
+        "Review", back_populates="book", cascade="all, delete-orphan", lazy="joined"
+    )
 
 
-class BookReview(Base):
-    __tablename__ = "book_reviews"
+class Review(Base):
+    __tablename__ = "reviews"
 
     id = Column(Integer, primary_key=True)
     desc = Column(Text, nullable=False)
     rating = Column(Integer, nullable=False)
-    user = Column(Integer, ForeignKey("users.id"))
-    book = Column(Integer, ForeignKey("books.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="reviews")
+    book_id = Column(Integer, ForeignKey("books.id"))
+    book = relationship("Book", back_populates="reviews")

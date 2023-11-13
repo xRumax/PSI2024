@@ -6,7 +6,7 @@ from ..author.schemas import AuthorBase
 class BookIn(BaseModel):
     title: str
     pub: datetime
-    author: int
+    author_id: int
 
     class Config:
         from_attributes = True

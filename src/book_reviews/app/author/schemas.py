@@ -14,3 +14,4 @@ class AuthorBase(BaseModel):
 
     class Config:
         from_attributes = True
+        exclude = {"books"}
