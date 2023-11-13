@@ -12,7 +12,7 @@ router = APIRouter()
 @inject
 def get_list(
     book_service: BookService = Depends(Provide[Container.book_service]),
-):
+) -> list[BookBase]:
     return book_service.get_books()
 
 
@@ -21,7 +21,7 @@ def get_list(
 def get_by_id(
     id: int,
     book_service: BookService = Depends(Provide[Container.book_service]),
-):
+) -> BookBase:
     return book_service.get_book_by_id(id)
 
 
