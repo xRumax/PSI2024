@@ -21,6 +21,5 @@ class Book(models.Model):
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     rating = models.FloatField()
     desc = models.CharField(max_length=45)
