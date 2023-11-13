@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from ..author.schemas import AuthorBase
 
 
 class BookIn(BaseModel):
@@ -15,7 +16,7 @@ class BookBase(BaseModel):
     id: int
     title: str
     pub: datetime
-    author: int
+    author: AuthorBase
 
     class Config:
-        orm_mode = True
+        from_attributes = True

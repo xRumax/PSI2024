@@ -6,9 +6,6 @@ class AuthorIn(BaseModel):
     name: str
     birth_date: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class AuthorBase(BaseModel):
     id: int

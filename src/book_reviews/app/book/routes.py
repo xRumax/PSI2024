@@ -4,8 +4,17 @@ from dependency_injector.wiring import inject, Provide
 from app.containers import Container
 from .services import BookService
 from .schemas import BookIn, BookBase
+from ..author.schemas import AuthorBase
 
 router = APIRouter()
+
+
+def sqlalchemy_object_to_dict(obj):
+    """Convert a SQLAlchemy object to a dictionary."""
+    if obj is None:
+        return None
+
+    return {column.name: getattr(obj, column.name) for column in obj.__table__.columns}
 
 
 @router.get("/", tags=["book"])

@@ -23,3 +23,15 @@ class AuthorRepository:
         with self.session_factory() as session:
             session.add(Author(**author.dict()))
             session.commit()
+
+    def delete(self, id: int) -> None:
+        with self.session_factory() as session:
+            session.query(Author).filter(Author.id == id).delete()
+            session.commit()
+
+    def update(self, id: int, author: AuthorIn) -> None:
+        with self.session_factory() as session:
+            session.query(Author).filter(Author.id == id).update(
+                author.model_dump(exclude_unset=True)
+            )
+            session.commit()

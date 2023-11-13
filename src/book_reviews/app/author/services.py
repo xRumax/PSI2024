@@ -12,3 +12,12 @@ class AuthorService:
 
     def add_author(self, author: AuthorIn) -> None:
         self._repository.add(author)
+
+    def get_author_by_id(self, id: int) -> Author:
+        return self._repository.get_by_id(id)
+
+    def delete_author(self, id: int) -> None:
+        self._repository.delete(id)
+
+    def update_author(self, id: int, author: AuthorIn) -> None:
+        self._repository.update(id, author)
