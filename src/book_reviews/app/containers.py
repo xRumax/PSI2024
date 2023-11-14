@@ -9,13 +9,21 @@ from .review.repositories import ReviewRepository
 from .review.services import ReviewService
 from .user.repositories import UserRepository
 from .user.services import UserService
+from .token.repositories import TokenRepository
+from .token.services import TokenService
 
 load_dotenv()
 
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
-        modules=[".book.routes", ".author.routes", ".review.routes", ".user.routes"]
+        modules=[
+            ".book.routes",
+            ".author.routes",
+            ".review.routes",
+            ".user.routes",
+            ".token.routes",
+        ]
     )
     config = providers.Configuration()
     config.db.url.from_env("DATABASE_URL")
@@ -50,4 +58,12 @@ class Container(containers.DeclarativeContainer):
     user_service = providers.Factory(
         UserService,
         user_repository=user_repository,
+    )
+
+    token_repository = providers.Factory(
+        TokenRepository, session_factory=db.provided.session
+    )
+    token_service = providers.Factory(
+        TokenService,
+        token_repository=token_repository,
     )

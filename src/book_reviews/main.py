@@ -5,7 +5,7 @@ from app.author.routes import router as author_router
 from app.review.routes import router as review_router
 from app.user.routes import router as user_router
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.token.routes import router as token_router
 
 container = Container()
 app = FastAPI()
@@ -25,6 +25,7 @@ app.include_router(book_router, prefix="/api/book", tags=["book"])
 app.include_router(author_router, prefix="/api/author", tags=["author"])
 app.include_router(review_router, prefix="/api/review", tags=["review"])
 app.include_router(user_router, prefix="/api/user", tags=["user"])
+app.include_router(token_router, prefix="", tags=["token"])
 # żeby odpalić aplikację, wpisz w terminalu:
 # uvicorn main:app --reload
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from dependency_injector.wiring import inject, Provide
 from app.containers import Container
 from .services import UserService
 from .schemas import UserIn, UserBase
+from typing import Annotated
 
 router = APIRouter()
 
