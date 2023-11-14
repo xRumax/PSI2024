@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from ..author.schemas import AuthorBase
+from typing import Optional
 
 
 class BookIn(BaseModel):
@@ -16,7 +17,13 @@ class BookBase(BaseModel):
     id: int
     title: str
     pub: datetime
-    author: AuthorBase
+    author: Optional[AuthorBase]
 
     class Config:
         from_attributes = True
+
+
+class BookOut(BaseModel):
+    id: int
+    title: str
+    pub: datetime

@@ -9,7 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(255), nullable=False)
     password = Column(String(255), nullable=False)
-    is_admin = Column(Integer, nullable=False)
+    is_admin = Column(Integer, nullable=False, default=False)
     reviews = relationship(
         "Review", back_populates="user", cascade="all, delete-orphan", lazy="joined"
     )

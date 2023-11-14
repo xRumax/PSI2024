@@ -1,8 +1,11 @@
 from contextlib import AbstractContextManager
 from typing import Callable
 from sqlalchemy.orm import Session
-from ..models import Review
-from .schemas import ReviewIn
+from ..models import Review, User, Book
+from .schemas import ReviewIn, ReviewBase
+from ..user.schemas import UserBase
+from ..book.schemas import BookOut
+from ..utils import object_as_dict
 
 
 class ReviewRepository:
@@ -11,9 +14,26 @@ class ReviewRepository:
     ) -> None:
         self.session_factory = session_factory
 
-    def get_all(self) -> list[Review]:
+    def get_all(self):
         with self.session_factory() as session:
-            return session.query(Review).all()
+            reviews = session.query(Review).all()
+            reviews = [object_as_dict(review) for review in reviews]
+            full_reviews = []
+            for review in reviews:
+                review["user"] = UserBase(
+                    **object_as_dict(
+                        session.query(User).filter_by(id=review["user_id"]).first()
+                    )
+                )
+
+                review["book"] = BookOut(
+                    **object_as_dict(
+                        session.query(Book).filter_by(id=review["book_id"]).first()
+                    )
+                )
+                review = ReviewBase(**review)
+                full_reviews.append(review)
+            return full_reviews
 
     def get_by_id(self, id: int) -> Review:
         with self.session_factory() as session:
