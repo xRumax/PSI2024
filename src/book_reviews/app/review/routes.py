@@ -4,7 +4,7 @@ from dependency_injector.wiring import inject, Provide
 from app.containers import Container
 from .services import ReviewService
 from .schemas import ReviewIn, ReviewBase
-from ..author.schemas import AuthorBase
+from ..token.auth import oauth2_scheme
 
 router = APIRouter()
 
@@ -48,8 +48,9 @@ def add_review(
 def delete_review(
     id: int,
     review_service: ReviewService = Depends(Provide[Container.review_service]),
+    token: dict = Depends(oauth2_scheme),
 ):
-    return review_service.delete_review(id)
+    return review_service.delete_review(id, token)
 
 
 @router.put("/{id}", tags=["review"])
@@ -58,5 +59,6 @@ def update_review(
     id: int,
     review: ReviewIn,
     review_service: ReviewService = Depends(Provide[Container.review_service]),
+    token: dict = Depends(oauth2_scheme),
 ):
-    return review_service.update_review(id, review)
+    return review_service.update_review(id, review, token)

@@ -6,6 +6,7 @@ from .schemas import ReviewIn, ReviewBase
 from ..user.schemas import UserBase
 from ..book.schemas import BookOut
 from ..utils import object_as_dict
+from fastapi import HTTPException
 
 
 class ReviewRepository:
@@ -44,14 +45,21 @@ class ReviewRepository:
             session.add(Review(**review.model_dump()))
             session.commit()
 
-    def delete(self, id: int) -> None:
+    def delete(self, id: int, token: dict) -> None:
         with self.session_factory() as session:
-            session.query(Review).filter(Review.id == id).delete()
-            session.commit()
-
-    def update(self, id: int, review: ReviewIn) -> None:
-        with self.session_factory() as session:
-            session.query(Review).filter(Review.id == id).update(
-                review.model_dump(exclude_unset=True)
+            review = session.query(Review).filter(Review.id == id).first()
+            if review.first.user_id == token["id"] or token["is_admin"]:
+                review.delete()
+                session.commit()
+            raise HTTPException(
+                status_code=401,
+                detail="You are not authorized to delete this review",
             )
+
+    def update(self, id: int, review: ReviewIn, token: dict) -> None:
+        with self.session_factory() as session:
+            review_ = session.query(Review).filter(Review.id == id)
+            if review_.first.user_id == token["id"] or token["is_admin"]:
+                review_.update(review.model_dump())
+                session.commit()
             session.commit()

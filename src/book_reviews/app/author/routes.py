@@ -4,6 +4,7 @@ from dependency_injector.wiring import inject, Provide
 from app.containers import Container
 from .services import AuthorService
 from .schemas import AuthorIn, AuthorBase
+from ..token.auth import oauth2_scheme
 
 router = APIRouter()
 
@@ -39,7 +40,10 @@ def add_author(
 def delete_author(
     id: int,
     author_service: AuthorService = Depends(Provide[Container.author_service]),
+    token: dict = Depends(oauth2_scheme),
 ):
+    if token["is_admin"] == False:
+        return {"detail": "Not Authorized"}
     return author_service.delete_author(id)
 
 
@@ -49,5 +53,8 @@ def update_author(
     id: int,
     author: AuthorIn,
     author_service: AuthorService = Depends(Provide[Container.author_service]),
+    token: dict = Depends(oauth2_scheme),
 ):
+    if token["is_admin"] == False:
+        return {"detail": "Not Authorized"}
     return author_service.update_author(id, author)

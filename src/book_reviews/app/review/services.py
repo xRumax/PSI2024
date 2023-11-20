@@ -16,8 +16,8 @@ class ReviewService:
     def get_review_by_id(self, id: int) -> Review:
         return self._repository.get_by_id(id)
 
-    def delete_review(self, id: int) -> None:
-        self._repository.delete(id)
+    def delete_review(self, id: int, token: dict) -> None:
+        self._repository.delete(id, token)
 
-    def update_review(self, id: int, review: ReviewIn) -> None:
-        self._repository.update(id, review)
+    def update_review(self, id: int, review: ReviewIn, token: dict) -> None:
+        self._repository.update(id, review, token)

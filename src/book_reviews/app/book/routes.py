@@ -4,6 +4,7 @@ from dependency_injector.wiring import inject, Provide
 from app.containers import Container
 from .services import BookService
 from .schemas import BookIn, BookBase
+from ..token.auth import decode_token, oauth2_scheme
 
 router = APIRouter()
 
@@ -39,7 +40,10 @@ def add_book(
 def delete_book(
     id: int,
     book_service: BookService = Depends(Provide[Container.book_service]),
+    token: dict = Depends(oauth2_scheme),
 ):
+    if token["is_admin"] == False:
+        return {"detail": "Not Authorized"}
     return book_service.delete_book(id)
 
 
@@ -49,5 +53,8 @@ def update_book(
     id: int,
     book: BookIn,
     book_service: BookService = Depends(Provide[Container.book_service]),
+    token: dict = Depends(oauth2_scheme),
 ):
+    if token["is_admin"] == False:
+        return {"detail": "Not Authorized"}
     return book_service.update_book(id, book)

@@ -19,5 +19,8 @@ class UserService:
     def delete_user(self, id: int) -> None:
         self._repository.delete(id)
 
-    def update_user(self, id: int, user: UserIn) -> None:
-        self._repository.update(id, user)
+    def update_user(self, id: int, user: UserIn, token: dict) -> None:
+        self._repository.update(id, user, token)
+
+    def login(self, user: UserIn, token: dict) -> dict:
+        return self._repository.login(user, token)

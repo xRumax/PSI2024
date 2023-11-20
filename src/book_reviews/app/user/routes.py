@@ -4,7 +4,7 @@ from dependency_injector.wiring import inject, Provide
 from app.containers import Container
 from .services import UserService
 from .schemas import UserIn, UserBase
-from typing import Annotated
+from ..token.auth import oauth2_scheme, decode_token
 
 router = APIRouter()
 
@@ -13,6 +13,7 @@ router = APIRouter()
 @inject
 def get_list(
     user_service: UserService = Depends(Provide[Container.user_service]),
+    token: dict = Depends(oauth2_scheme),
 ) -> list[UserBase]:
     return user_service.get_users()
 
@@ -50,5 +51,21 @@ def update_user(
     id: int,
     user: UserIn,
     user_service: UserService = Depends(Provide[Container.user_service]),
+    token: dict = Depends(oauth2_scheme),
 ):
-    return user_service.update_user(id, user)
+    return user_service.update_user(id, user, token)
+
+
+@router.post("/login", tags=["user"])
+@inject
+def login(
+    user: UserIn,
+    user_service: UserService = Depends(Provide[Container.user_service]),
+    token: dict = Depends(oauth2_scheme),
+):
+    return user_service.login(user, token)
+
+
+@router.post("/token", tags=["auth"])
+def token(token: str):
+    return decode_token(token)
