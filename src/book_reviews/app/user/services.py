@@ -7,8 +7,8 @@ class UserService:
     def __init__(self, user_repository: UserRepository) -> None:
         self._repository: UserRepository = user_repository
 
-    def get_users(self) -> list[User]:
-        return self._repository.get_all()
+    def get_users(self, sort, order, limit, skip) -> list[User]:
+        return self._repository.get_all(sort, order, limit, skip)
 
     def add_user(self, user: UserIn) -> None:
         self._repository.add(user)

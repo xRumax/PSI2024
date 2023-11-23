@@ -12,9 +12,13 @@ router = APIRouter()
 @router.get("/", tags=["author"])
 @inject
 def get_list(
+    sort: str = None,
+    order: str = "asc",
+    limit: int = 10,
+    skip: int = 0,
     author_service: AuthorService = Depends(Provide[Container.author_service]),
 ) -> list[AuthorBase]:
-    return author_service.get_authors()
+    return author_service.get_authors(sort, order, limit, skip)
 
 
 @router.get("/{id}", tags=["author"])

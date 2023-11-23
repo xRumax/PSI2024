@@ -5,6 +5,7 @@ from ..models import Book, Author
 from .schemas import BookIn, BookBase
 from ..author.schemas import AuthorBase
 from ..utils import object_as_dict
+from fastapi import HTTPException
 
 
 class BookRepository:
@@ -13,9 +14,58 @@ class BookRepository:
     ) -> None:
         self.session_factory = session_factory
 
-    def get_all(self) -> list[Book]:
+    def get_all(
+        self,
+        sort: str = None,
+        order: str = "asc",
+        limit: int = 10,
+        skip: int = 0,
+    ) -> list[Book]:
         with self.session_factory() as session:
-            books = session.query(Book).all()
+            if sort != "id" and sort != "title" and sort:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The sort parameter must be id or title",
+                )
+            if order != "asc" and order != "desc" and order:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The order parameter must be asc or desc",
+                )
+            if sort == "id":
+                if order == "asc":
+                    books = (
+                        session.query(Book)
+                        .order_by(Book.id.asc())
+                        .limit(limit)
+                        .offset(skip)
+                        .all()
+                    )
+                books = (
+                    session.query(Book)
+                    .order_by(Book.id.desc())
+                    .limit(limit)
+                    .offset(skip)
+                    .all()
+                )
+            elif sort == "title":
+                if order == "asc":
+                    books = (
+                        session.query(Book)
+                        .order_by(Book.title.asc())
+                        .limit(limit)
+                        .offset(skip)
+                        .all()
+                    )
+                books = (
+                    session.query(Book)
+                    .order_by(Book.title.desc())
+                    .limit(limit)
+                    .offset(skip)
+                    .all()
+                )
+            else:
+                books = session.query(Book).limit(limit).offset(skip).all()
             books = [object_as_dict(book) for book in books]
             books_with_author = []
             for book in books:

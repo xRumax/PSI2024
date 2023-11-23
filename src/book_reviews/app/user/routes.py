@@ -12,10 +12,14 @@ router = APIRouter()
 @router.get("/", tags=["user"])
 @inject
 def get_list(
+    sort: str = None,
+    order: str = "asc",
+    limit: int = 10,
+    skip: int = 0,
     user_service: UserService = Depends(Provide[Container.user_service]),
     token: dict = Depends(oauth2_scheme),
 ) -> list[UserBase]:
-    return user_service.get_users()
+    return user_service.get_users(sort, order, limit, skip)
 
 
 @router.get("/{id}", tags=["user"])

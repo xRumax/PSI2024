@@ -9,20 +9,16 @@ from ..token.auth import oauth2_scheme
 router = APIRouter()
 
 
-def sqlalchemy_object_to_dict(obj):
-    """Convert a SQLAlchemy object to a dictionary."""
-    if obj is None:
-        return None
-
-    return {column.name: getattr(obj, column.name) for column in obj.__table__.columns}
-
-
 @router.get("/", tags=["review"])
 @inject
 def get_list(
+    sort: str = None,
+    order: str = "asc",
+    limit: int = 10,
+    skip: int = 0,
     review_service: ReviewService = Depends(Provide[Container.review_service]),
 ) -> list[ReviewBase]:
-    return review_service.get_reviews()
+    return review_service.get_reviews(sort, order, limit, skip)
 
 
 @router.get("/{id}", tags=["review"])

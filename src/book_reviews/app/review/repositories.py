@@ -15,10 +15,8 @@ class ReviewRepository:
     ) -> None:
         self.session_factory = session_factory
 
-    def get_all(self):
+    def get_reviews(self, reviews) -> list[Review]:
         with self.session_factory() as session:
-            reviews = session.query(Review).all()
-            reviews = [object_as_dict(review) for review in reviews]
             full_reviews = []
             for review in reviews:
                 review["user"] = UserBase(
@@ -35,6 +33,55 @@ class ReviewRepository:
                 review = ReviewBase(**review)
                 full_reviews.append(review)
             return full_reviews
+
+    def get_all(self, sort: str, order: str, limit: int, skip: int):
+        with self.session_factory() as session:
+            if sort != "id" and sort != "rating" and sort:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The sort parameter must be id, user_id or book_id",
+                )
+            if order != "asc" and order != "desc" and order:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The order parameter must be asc or desc",
+                )
+            if sort == "id" and order == "asc":
+                if order == "asc":
+                    reviews = (
+                        session.query(Review)
+                        .order_by(Review.id.asc())
+                        .limit(limit)
+                        .offset(skip)
+                        .all()
+                    )
+                reviews = (
+                    session.query(Review)
+                    .order_by(Review.id.desc())
+                    .limit(limit)
+                    .offset(skip)
+                    .all()
+                )
+            if sort == "rating":
+                if order == "asc":
+                    reviews = (
+                        session.query(Review)
+                        .order_by(Review.rating.asc())
+                        .limit(limit)
+                        .offset(skip)
+                        .all()
+                    )
+                reviews = (
+                    session.query(Review)
+                    .order_by(Review.rating.desc())
+                    .limit(limit)
+                    .offset(skip)
+                    .all()
+                )
+            if not sort:
+                reviews = session.query(Review).limit(limit).offset(skip).all()
+            reviews = [object_as_dict(review) for review in reviews]
+            return self.get_reviews(reviews)
 
     def get_by_id(self, id: int) -> Review:
         with self.session_factory() as session:

@@ -7,8 +7,14 @@ class BookService:
     def __init__(self, book_repository: BookRepository) -> None:
         self._repository: BookRepository = book_repository
 
-    def get_books(self) -> list[Book]:
-        return self._repository.get_all()
+    def get_books(
+        self,
+        sort: str = None,
+        order: str = "asc",
+        limit: int = 10,
+        skip: int = 0,
+    ) -> list[Book]:
+        return self._repository.get_all(sort, order, limit, skip)
 
     def add_book(self, book: BookIn) -> None:
         self._repository.add(book)

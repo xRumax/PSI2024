@@ -14,8 +14,53 @@ class UserRepository:
     ) -> None:
         self.session_factory = session_factory
 
-    def get_all(self) -> list[User]:
+    def get_all(self, sort: str, order: str, limit: int, skip: int) -> list[User]:
         with self.session_factory() as session:
+            if sort != "id" and sort != "username" and sort:
+                raise HTTPException(
+                    status_code=400,
+                    detail="The sort parameter must be id or username",
+                )
+            if sort == "id":
+                if order == "asc":
+                    return (
+                        session.query(User)
+                        .order_by(User.id.asc())
+                        .limit(limit)
+                        .offset(skip)
+                        .all()
+                    )
+                return (
+                    session.query(User)
+                    .order_by(User.id.desc())
+                    .limit(limit)
+                    .offset(skip)
+                    .all()
+                )
+            if sort == "username":
+                if order == "asc":
+                    return (
+                        session.query(User)
+                        .order_by(User.username.asc())
+                        .limit(limit)
+                        .offset(skip)
+                        .all()
+                    )
+                return (
+                    session.query(User)
+                    .order_by(User.username.desc())
+                    .limit(limit)
+                    .offset(skip)
+                    .all()
+                )
+            if order != "asc" and order != "desc":
+                raise HTTPException(
+                    status_code=400,
+                    detail="The order parameter must be asc or desc",
+                )
+            if not sort:
+                return session.query(User).limit(limit).offset(skip).all()
+
             return session.query(User).all()
 
     def get_by_id(self, id: int) -> User:
