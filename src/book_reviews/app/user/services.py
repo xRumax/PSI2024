@@ -22,5 +22,5 @@ class UserService:
     def update_user(self, id: int, user: UserIn, token: dict) -> None:
         self._repository.update(id, user, token)
 
-    def login(self, user: UserIn, token: dict) -> dict:
-        return self._repository.login(user, token)
+    def login(self, user: UserIn) -> dict:
+        return self._repository.login(user)

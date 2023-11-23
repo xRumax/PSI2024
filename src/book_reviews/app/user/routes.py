@@ -65,9 +65,8 @@ def update_user(
 def login(
     user: UserIn,
     user_service: UserService = Depends(Provide[Container.user_service]),
-    token: dict = Depends(oauth2_scheme),
 ):
-    return user_service.login(user, token)
+    return user_service.login(user)
 
 
 @router.post("/token", tags=["auth"])
