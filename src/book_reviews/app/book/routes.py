@@ -5,6 +5,7 @@ from app.containers import Container
 from .services import BookService
 from .schemas import BookIn, BookBase
 from ..token.auth import oauth2_scheme
+from fastapi import HTTPException
 
 router = APIRouter()
 
@@ -48,7 +49,10 @@ def delete_book(
     token: dict = Depends(oauth2_scheme),
 ):
     if token["is_admin"] == False:
-        return {"detail": "Not Authorized"}
+        raise HTTPException(
+            status_code=400,
+            detail="Not Authorized",
+        )
     return book_service.delete_book(id)
 
 
@@ -61,5 +65,8 @@ def update_book(
     token: dict = Depends(oauth2_scheme),
 ):
     if token["is_admin"] == False:
-        return {"detail": "Not Authorized"}
+        raise HTTPException(
+            status_code=400,
+            detail="Not Authorized",
+        )
     return book_service.update_book(id, book)
