@@ -34,9 +34,10 @@ def get_by_id(
 @inject
 def add_review(
     review: ReviewIn,
+    token: dict = Depends(oauth2_scheme),
     review_service: ReviewService = Depends(Provide[Container.review_service]),
 ):
-    return review_service.add_review(review)
+    return review_service.add_review(review, token["id"])
 
 
 @router.delete("/{id}", tags=["review"])

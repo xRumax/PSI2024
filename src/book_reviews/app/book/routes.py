@@ -34,6 +34,7 @@ def get_by_id(
 @inject
 def add_book(
     book: BookIn,
+    token: dict = Depends(oauth2_scheme),
     book_service: BookService = Depends(Provide[Container.book_service]),
 ):
     return book_service.add_book(book)

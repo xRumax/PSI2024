@@ -6,7 +6,6 @@ from ..user.schemas import UserBase
 class ReviewIn(BaseModel):
     desc: str
     rating: int
-    user_id: int
     book_id: int
 
     class Config:

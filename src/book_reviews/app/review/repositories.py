@@ -87,9 +87,11 @@ class ReviewRepository:
         with self.session_factory() as session:
             return session.query(Review).filter(Review.id == id).first()
 
-    def add(self, review: ReviewIn) -> None:
+    def add(self, review: ReviewIn, user_id: int) -> None:
         with self.session_factory() as session:
-            session.add(Review(**review.model_dump()))
+            review = Review(**review.model_dump())
+            review.user_id = user_id
+            session.add(review)
             session.commit()
 
     def delete(self, id: int, token: dict) -> None:

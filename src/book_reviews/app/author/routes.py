@@ -34,6 +34,7 @@ def get_by_id(
 @inject
 def add_author(
     author: AuthorIn,
+    token: dict = Depends(oauth2_scheme),
     author_service: AuthorService = Depends(Provide[Container.author_service]),
 ):
     return author_service.add_author(author)
