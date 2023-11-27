@@ -37,7 +37,6 @@ class Book(Base):
 
 class Review(Base):
     __tablename__ = "reviews"
-
     id = Column(Integer, primary_key=True)
     desc = Column(Text, nullable=False)
     rating = Column(Integer, nullable=False)
