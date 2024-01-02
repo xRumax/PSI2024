@@ -6,6 +6,7 @@ class AuthorType(DjangoObjectType):
     class Meta:
         model = Author
 
+
 class BookType(DjangoObjectType):
     class Meta:
         model = Book
@@ -115,11 +116,31 @@ class CreateBook(graphene.Mutation):
         )    
         book.save()
         return CreateBook(book = book)
+    
+class CreateShop(graphene.Mutation):
+    shop = graphene.Field(ShopType)
+
+    class Arguments:
+        name = graphene.String()
+        adress = graphene.String()
+        email = graphene.String()
+        book = graphene.Int()
+
+    def mutated(self, name, adress, email, book):
+        shop = Shop(
+            name = name,
+            adress = adress,
+            email = email,
+            book = book,
+        )    
+        shop.save()
+        return CreateShop(shop = shop)
 
 class Mutation(graphene.ObjectType):
     create_author = CreateAuthor.Field()
     create_user = CreateUser.Field()
     create_book = CreateBook.Field()
-    create_review=CreateReview.Field()
+    create_review = CreateReview.Field()
+    create_shop = CreateShop.Field()
 
     
