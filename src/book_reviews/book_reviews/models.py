@@ -23,3 +23,5 @@ class Review(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     rating = models.FloatField()
     desc = models.CharField(max_length=45)
+
+
