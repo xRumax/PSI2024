@@ -68,7 +68,3 @@ def login(
 ):
     return user_service.login(user)
 
-
-@router.post("/token", tags=["auth"])
-def token(token: str):
-    return decode_token(token)
