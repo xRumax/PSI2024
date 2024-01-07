@@ -45,7 +45,7 @@ class Query(graphene.ObjectType):
     def resolve_all_reviews(self, info, **kwargs):
         return Review.objects.all()
 
-
+schema = graphene.Schema(query=Query)
 
 class CreateAuthor(graphene.Mutation):
     author = graphene.Field(AuthorType)
@@ -54,10 +54,10 @@ class CreateAuthor(graphene.Mutation):
         name = graphene.String()
         date_of_birth = graphene.DateTime()
 
-    def mutated(self, info, name,date_of_birth):
+    def mutate(self, info, **kwargs):
         author = Author(
-            name = name,
-            date_of_birth = date_of_birth,
+            name = kwargs.get('name'),
+            date_of_birth = kwargs.get('date_of_birth'),
         )    
         author.save()
         return CreateAuthor(author=author)
@@ -71,7 +71,7 @@ class CreateUser(graphene.Mutation):
         password = graphene.String()
         admin = graphene.Boolean()
 
-    def mutated(self, info, name, password, admin):
+    def mutate(self, info, name, password, admin):
         user = User(
             name = name,
             password = password,
@@ -90,13 +90,13 @@ class CreateReview(graphene.Mutation):
         rating = graphene.Float()
         desc = graphene.String()
 
-    def mutated(self, user, book, rating, desc):
+    def mutate(self, info, **kwargs):
         review = Review(
-            user = user,
-            book = book,
-            rating = rating,
-            desc = desc,
-        )    
+        user=kwargs.get('user'),
+        book=kwargs.get('book'),
+        rating=kwargs.get('rating'),
+        desc=kwargs.get('desc'),
+    ) 
         review.save()
         return CreateReview(review = review)
 
@@ -108,12 +108,12 @@ class CreateBook(graphene.Mutation):
         name = graphene.String()
         pub = graphene.Int()
 
-    def mutated(self, author, name, pub):
+    def mutate(self, info, **kwargs):
         book = Book(
-            author = author,
-            name = name,
-            pub = pub,
-        )    
+        author=kwargs.get('author'),
+        name=kwargs.get('name'),
+        pub=kwargs.get('pub'),
+    )   
         book.save()
         return CreateBook(book = book)
     
@@ -126,13 +126,13 @@ class CreateShop(graphene.Mutation):
         email = graphene.String()
         book = graphene.Int()
 
-    def mutated(self, name, adress, email, book):
+    def mutate(self, info, **kwargs):
         shop = Shop(
-            name = name,
-            adress = adress,
-            email = email,
-            book = book,
-        )    
+        name=kwargs.get('name'),
+        adress=kwargs.get('adress'),
+        email=kwargs.get('email'),
+        book=kwargs.get('book'),
+    )   
         shop.save()
         return CreateShop(shop = shop)
 
