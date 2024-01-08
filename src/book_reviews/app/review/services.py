@@ -8,7 +8,7 @@ class ReviewService:
         self._repository: ReviewRepository = review_repository
 
     def get_reviews(self, sort: str, order: str, limit: int, skip: int) -> list[Review]:
-        return self._repository.get_all()
+        return self._repository.get_all(sort, order, limit, skip)
 
     def add_review(self, review: ReviewIn, user_id: int) -> None:
         self._repository.add(review, user_id)

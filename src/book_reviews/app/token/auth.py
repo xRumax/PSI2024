@@ -1,4 +1,6 @@
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import (
+    OAuth2PasswordBearer,
+)
 from datetime import datetime, timedelta
 from jose import jwt
 from ..settings import (
@@ -7,7 +9,7 @@ from ..settings import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
 )
 
-oauth2_scheme = HTTPBearer()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/token")
 
 
 def create_access_token(data: dict):
