@@ -16,7 +16,7 @@ dependencies = [
     "python-jose[cryptography]>=3.3.0",
     "graphene_django",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 readme = "README.md"
 license = {text = "MIT"}
 
